@@ -1,64 +1,67 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-char* (*dataset(FILE* safData))[7];
-int main(){
-FILE* safData = fopen("/home/emec/Masaüstü/C/data.csv","r");
-if(!safData){
-    return 1;
-};
-
-dataset(safData);
-
-};
-
-char* (*dataset(FILE* safData))[7]{
-
+typedef char* csvRead[7];
+typedef csvRead* (*dataSet_t)(FILE*,csvRead*);
+csvRead* dataSet(FILE*,csvRead*);
 struct IotFann
 {
-
-
-    
+FILE*  safData;
+char* satirlar[20600][7];
+dataSet_t parser;   
 };
+
+int main(){
+FILE* safDatax = fopen("/home/emec/Masaüstü/C/data.csv","r");
+if(!safDatax){
+    return 1;
+};
+struct IotFann Veri;
+Veri.safData = safDatax;
+Veri.parser = dataSet;
+Veri.parser(Veri.safData,Veri.satirlar);
+
+return 0;
+
+};
+
+csvRead* dataSet(FILE* safData,csvRead* satirlar){
 char satir [200];
-char*  satirLeft;
 int  satirSatir = 0;
 int satirSutun = 0;
-int a;
-char* satirlar[20600][7];
-char buffer[20];
-int j=0;
+int satirLeft,satirTop = 0;
+// csvRead* satirlar = (csvRead*)malloc(24999 * sizeof(csvRead));
+char buffer[201];
 while(fgets(satir,sizeof(satir),safData)){
     for (int i=0;satir[i] != '\0';i++){ 
         if (satir[i]==',' || satir[i]=='\n')
         {
 
-        for(j=a;j<i;j++){
+        for(satirTop=satirLeft;satirTop<i;satirTop++){
             
-            buffer[j-a]=satir[j];
+            buffer[satirTop-satirLeft]=satir[satirTop];
 
         };
 
-        buffer[j-a]='\0';
+        buffer[satirTop-satirLeft]='\0';
 
-        satirlar[satirSatir][satirSutun] = malloc(j-a+1);
+        satirlar[satirSatir][satirSutun] = malloc(satirTop-satirLeft+1);
         
         strcpy(satirlar[satirSatir][satirSutun],buffer);
         
-        a = i+1;
+        satirLeft = i+1;
         satirSutun++;
         //printf("%d",satirSutun);
 
         };
     }
-    a = 0;
+    satirLeft = 0;
     satirSatir++;
     satirSutun = 0;
     
 };
     printf("%s \n",satirlar[20560][5]);
     printf("%s \n",satirlar[20560][6]);
-
     return satirlar;
 };
+
