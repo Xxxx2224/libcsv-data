@@ -42,7 +42,6 @@ Veri.parser(Veri.safData,Veri.satirlar,sayac);
 //printf("%d \n",Veri.satirSayisi);
 
 FILE* ptr = output1(Veri.satirlar,Veri.satirSayisi);
-
     return 0;
 
 };
