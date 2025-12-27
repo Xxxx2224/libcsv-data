@@ -1,8 +1,12 @@
 #include "../include/data_model.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #define FANN_ROWS_ALLOC 100
+#define FANN_IO_BUFFER_SIZE 65536
+
+static FannError rows_resize(FannDataset *fannDataset);
 
 FannError FannDataset_create(FannDataset **fannDataset,
                              const char *const file_path, size_t total_columns,
@@ -105,6 +109,16 @@ FannError FannDataset_parse(FannDataset *fannDataset,
   char *active_file_handle = file_handle_org;
   size_t rows = 0;
   __uint32_t colums = 0;
+
+  while (skip_rows > 0) {
+    if (*active_file_handle == '\n') {
+      skip_rows--;
+    }
+    active_file_handle++;
+    if (active_file_handle == end_ptr) {
+      return FANN_ERR_DATA;
+    }
+  }
   char *left_ptr = active_file_handle;
   while (active_file_handle < end_ptr) {
 
@@ -121,6 +135,11 @@ FannError FannDataset_parse(FannDataset *fannDataset,
       fannDataset->rows[rows].output[colums] = left_ptr;
       *active_file_handle = '\0';
       left_ptr = active_file_handle + 1;
+      if (colums != (fannDataset->total_columns - 1)) {
+        for (size_t i = colums + 1; i < fannDataset->total_columns; i++) {
+          fannDataset->rows[rows].output[i] = NULL;
+        }
+      }
       colums = 0;
 
       rows++;
@@ -132,6 +151,7 @@ FannError FannDataset_parse(FannDataset *fannDataset,
     }
     active_file_handle++;
   }
+  fannDataset->total_rows = rows;
   return FANN_SUCCESS;
 }
 
@@ -156,6 +176,59 @@ static FannError rows_resize(FannDataset *fannDataset) {
   if (!fannDataset->rows_alloc) {
     return FANN_ERR_ALLOC;
   }
+  return FANN_SUCCESS;
+}
+
+FannError FannDataset_OutData(FannDataset *fannDataset, const char *new_name) {
+  if (fannDataset == NULL || new_name == NULL || new_name[0] == '\0') {
+    return FANN_ERR_ARG;
+  }
+  FILE *file = fopen(new_name, "w");
+  if (!file) {
+    perror(NULL);
+    return FANN_ERR_IO;
+  }
+
+  int data_flag = 0;
+  char io_buffer[FANN_IO_BUFFER_SIZE];
+  if (setvbuf(file, io_buffer, _IOFBF, sizeof(io_buffer)) != 0) {
+    perror("Buffer set failed");
+  }
+  fprintf(file, "%zu %zu %zu\n", fannDataset->total_rows,
+          fannDataset->input_columns, fannDataset->output_columns);
+
+  for (size_t i = 0; i < fannDataset->total_rows; i++) {
+    data_flag = 0;
+    for (size_t a = 0; a < fannDataset->total_columns; a++) {
+      if (fannDataset->rows[i].output[a] == NULL) {
+        data_flag = 1;
+        break;
+      }
+    }
+
+    if (data_flag) {
+      continue;
+    }
+
+    for (size_t j = 0; j < fannDataset->input_columns; j++) {
+      fputs(fannDataset->rows[i].output[j], file);
+      if (j < fannDataset->input_columns - 1) {
+        fputc(' ', file);
+      }
+    }
+    fputc('\n', file);
+
+    for (size_t j = fannDataset->input_columns; j < fannDataset->total_columns;
+         j++) {
+      fputs(fannDataset->rows[i].output[j], file);
+      if (j < fannDataset->total_columns - 1) {
+        fputc(' ', file);
+      }
+    }
+    fputc('\n', file);
+  }
+
+  fclose(file);
   return FANN_SUCCESS;
 }
 

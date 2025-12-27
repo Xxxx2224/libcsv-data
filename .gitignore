@@ -1,0 +1,42 @@
+# --- C/C++ Build Artifacts ---
+# Object files
+*.o
+*.obj
+
+# Static and Dynamic Libraries
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# --- Executables ---
+# Common extensions
+*.exe
+*.out
+*.app
+
+# Specific project executables (Linux binaries)
+IotFann
+hexdumper
+test_runner
+data1.csv
+# --- Build Directories ---
+build/
+bin/
+dist/
+obj/
+
+
+# --- IDE & System Configs ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Temporary & Backup Files ---
+*.log
+*.bak
+*.swp
+*~

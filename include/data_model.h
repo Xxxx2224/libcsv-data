@@ -63,6 +63,5 @@ FannError FannDataset_OutData(FannDataset *FannDataset, const char *new_name);
 
 FannError FannDataset_destroy(FannDataset **FannDataset);
 
-static FannError rows_resize(FannDataset *fannDataset);
 void print_raw_string_including_null(const char *str);
 #endif
