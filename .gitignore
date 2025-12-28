@@ -21,16 +21,19 @@
 IotFann
 hexdumper
 test_runner
+parser_test
+fann_test
 data1.csv
 # --- Build Directories ---
 build/
 bin/
 dist/
 obj/
+.vscode/
 
 
 # --- IDE & System Configs ---
-.vscode/
+
 .idea/
 .DS_Store
 Thumbs.db

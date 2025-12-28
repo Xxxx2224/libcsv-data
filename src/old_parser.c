@@ -31,7 +31,6 @@ int main() {
   };
 
   struct IotFann Veri;
-  struct IotFannDataset output;
 
   int *sayac = &Veri.satirSayisi;
   Veri.safData = safDatax;
@@ -41,7 +40,6 @@ int main() {
   // printf("%s \n",Veri.satirlar[20560][6]);
   // printf("%d \n",Veri.satirSayisi);
 
-  FILE *ptr = output1(Veri.satirlar, Veri.satirSayisi);
   return 0;
 };
 

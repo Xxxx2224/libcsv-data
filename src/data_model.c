@@ -1,4 +1,4 @@
-#include "../include/data_model.h"
+#include "data_model.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -98,9 +98,9 @@ FannError FannDataset_parse_csv(FannDataset *fannDataset,
   file_handle[st.st_size] = '\0';
   char *end_ptr = &file_handle[st.st_size - 1];
   fclose(fannDataset->file);
+  fannDataset->file = NULL;
 
-  FannDataset_parse(fannDataset, file_handle, end_ptr, skip_rows, ayrac);
-  return FANN_SUCCESS;
+  return FannDataset_parse(fannDataset, file_handle, end_ptr, skip_rows, ayrac);
 }
 
 FannError FannDataset_parse(FannDataset *fannDataset,
