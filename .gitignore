@@ -18,12 +18,9 @@
 *.app
 
 # Specific project executables (Linux binaries)
-IotFann
-hexdumper
-test_runner
-parser_test
-fann_test
+
 data1.csv
+fann_csv_test
 # --- Build Directories ---
 build/
 bin/

@@ -1,13 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -g -I./include
-SRCS = src/main_test.c src/data_model.c
-OBJS = $(SRCS:.c=.o)
-TARGET = parser_test
+LIB_SRCS = src/parser_csvtodata.c
+TEST_SRCS = examples/simple_test.c
+TARGET_LIB = libfann_csv.a
+TARGET_TEST = fann_csv_test
 
-all: $(TARGET)
+.PHONY: all clean
 
-$(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) -o $@ $(SRCS)
+all: $(TARGET_TEST)
+
+
+$(TARGET_TEST): $(TEST_SRCS) $(LIB_SRCS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f $(TARGET) formatted_output.data
+	rm -f $(TARGET_TEST) $(TARGET_LIB) *.o src/*.o examples/*.o new_formatted_output.data

@@ -6,6 +6,27 @@
 #define FANN_ROWS_ALLOC 100
 #define FANN_IO_BUFFER_SIZE 65536
 
+typedef struct {
+  char **output;
+} Fann_rows;
+
+typedef struct FannDataset {
+  char *file_handle;
+  FILE *file;
+  Fann_rows *rows;
+
+  size_t total_columns;
+  size_t input_columns;
+  size_t output_columns;
+  size_t total_rows;
+  size_t rows_alloc;
+
+} FannDataset;
+
+static FannError FannDataset_parse(FannDataset *fannDataset,
+                                   char *const file_handle_org, char *end_ptr,
+                                   unsigned int skip_rows, const char ayrac);
+
 static FannError rows_resize(FannDataset *fannDataset);
 
 FannError FannDataset_create(FannDataset **fannDataset,
@@ -22,7 +43,7 @@ FannError FannDataset_create(FannDataset **fannDataset,
 
   if (!file) {
 
-    perror(NULL);
+    // perror(NULL);
     return FANN_ERR_IO;
   }
 
@@ -31,7 +52,7 @@ FannError FannDataset_create(FannDataset **fannDataset,
   *fannDataset = (FannDataset *)malloc(sizeof(FannDataset));
 
   if (*fannDataset == NULL) {
-    perror(NULL);
+    // perror(NULL);
     return FANN_ERR_ALLOC;
   }
   (*fannDataset)->file = file;
@@ -46,7 +67,7 @@ FannError FannDataset_create(FannDataset **fannDataset,
       (Fann_rows *)malloc(FANN_ROWS_ALLOC * sizeof(Fann_rows));
   if ((*fannDataset)->rows == NULL) {
     free((*fannDataset));
-    perror(NULL);
+    // perror(NULL);
     return FANN_ERR_ALLOC;
   }
   for (size_t i = 0; i < FANN_ROWS_ALLOC; i++) {
@@ -66,22 +87,23 @@ FannError FannDataset_parse_csv(FannDataset *fannDataset,
   if (fstat(fileno(fannDataset->file), &st) != 0) {
     return FANN_ERR_DATA;
   }
+
   // fseek(fannDataset->file, 0, SEEK_END);
   // unsigned int file_size = ftell(fannDataset->file);
   // fseek(fannDataset->file, 0, SEEK_SET);
   // fseek ile fstat farki sonra test edilecek simdilik isletim sistemini
   // kullanan fonksiyonu kullaniyorum hiz ve guvenirlik acisindan fread
   // davranisinada bakilacak windowsta /r leri galiba kaldiriyor bakicaz
-  // read_count a da bakilacak onu unuttum
+
   if (st.st_size <= 0) {
-    perror(NULL);
+    // perror(NULL);
     fclose(fannDataset->file);
     return FANN_ERR_IO;
   }
 
   char *const file_handle = malloc(st.st_size + 100);
   if (!file_handle) {
-    perror(NULL);
+    // perror(NULL);
     fclose(fannDataset->file);
     return FANN_ERR_ALLOC;
   }
@@ -89,7 +111,7 @@ FannError FannDataset_parse_csv(FannDataset *fannDataset,
   fannDataset->file_handle = file_handle;
   size_t read_count = fread(file_handle, 1, st.st_size, fannDataset->file);
   if (read_count != st.st_size) {
-    perror(NULL);
+    // perror(NULL);
     free(file_handle);
     fclose(fannDataset->file);
     return FANN_ERR_IO;
@@ -185,14 +207,14 @@ FannError FannDataset_OutData(FannDataset *fannDataset, const char *new_name) {
   }
   FILE *file = fopen(new_name, "w");
   if (!file) {
-    perror(NULL);
+    // perror(NULL);
     return FANN_ERR_IO;
   }
 
   int data_flag = 0;
   char io_buffer[FANN_IO_BUFFER_SIZE];
   if (setvbuf(file, io_buffer, _IOFBF, sizeof(io_buffer)) != 0) {
-    perror("Buffer set failed");
+    // perror("Buffer set failed");
   }
   fprintf(file, "%zu %zu %zu\n", fannDataset->total_rows,
           fannDataset->input_columns, fannDataset->output_columns);

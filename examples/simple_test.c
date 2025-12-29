@@ -9,7 +9,6 @@ int main() {
   const char *csv_file = "data.csv";
   const char *output_file = "formatted_output.data";
 
-  // Updated to 7 columns based on data.csv content
   size_t total_cols = 7;
   size_t input_cols = 6;
   size_t output_cols = 1;
@@ -23,15 +22,13 @@ int main() {
   }
 
   printf("Parsing CSV...\n");
-  // No header row in data.csv, so skip 0
+
   err = FannDataset_parse_csv(dataset, 0, ',');
   if (err != FANN_SUCCESS) {
     fprintf(stderr, "Error parsing CSV: %d\n", err);
     FannDataset_destroy(&dataset);
     return 1;
   }
-
-  printf("Parsed %zu rows.\n", dataset->total_rows);
 
   printf("Writing output data to %s...\n", output_file);
   err = FannDataset_OutData(dataset, output_file);
